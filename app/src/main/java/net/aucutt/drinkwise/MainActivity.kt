@@ -20,10 +20,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
 import net.aucutt.drinkwise.MainActivity.Companion.TAG
 import net.aucutt.drinkwise.data.Drink
 import net.aucutt.drinkwise.data.DrinkViewModel
 import net.aucutt.drinkwise.ui.theme.DrinkWiseTheme
+
+
+@Serializable
+private data object HomeRoute
+
+@Serializable
+private data object AddWineRoute
+
 
 class MainActivity : ComponentActivity() {
     val drinkViewModel : DrinkViewModel by viewModels()
@@ -54,10 +64,8 @@ fun Design(
     drinkModel: DrinkViewModel = viewModel()
 ) {
     val drinks by drinkModel.drinks.collectAsStateWithLifecycle()
-    var idx = "0"
     for (drink in drinks) {
         Log.d(TAG, "Drink ${drink.date}")
-        idx = drink.id
     }
     Log.d(TAG, "Number of drinks ${drinks.size}")
 

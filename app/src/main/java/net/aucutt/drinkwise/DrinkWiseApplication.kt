@@ -6,6 +6,16 @@ import net.aucutt.drinkwise.data.DrinkRepository
 
 class DrinkWiseApplication : Application() {
 
-    val database: DrinkDatabase by lazy { DrinkDatabase.getDatabase(this) }
-    val drinkRepository: DrinkRepository by lazy { DrinkRepository(database.drinkDao()) }
+    lateinit var database: DrinkDatabase
+      private set
+
+    lateinit var drinkRepository: DrinkRepository
+        private set
+
+    override fun onCreate() {
+        super.onCreate()
+        //Moved database and repository to onCreate to get rid of nullables.
+        database = DrinkDatabase.getDatabase(this)
+        drinkRepository = DrinkRepository(database.drinkDao())
+    }
 }
