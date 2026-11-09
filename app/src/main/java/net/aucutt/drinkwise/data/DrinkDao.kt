@@ -19,6 +19,7 @@ interface DrinkDao {
     @Query("SELECT * FROM drink ORDER by date DESC")
     suspend fun returnDrinks() : List<Drink>
 
-    @Delete("DELETE * FROM drink")
-    sups
+    @Query("DELETE FROM drink")
+    suspend fun deleteAllDrinks()
+
 }

@@ -56,22 +56,10 @@ fun Design(
     val drinks by drinkModel.drinks.collectAsStateWithLifecycle()
     var idx = "0"
     for (drink in drinks) {
-        println("Drink ${drink.date}")
         Log.d(TAG, "Drink ${drink.date}")
         idx = drink.id
     }
     Log.d(TAG, "Number of drinks ${drinks.size}")
-
-    LaunchedEffect(Unit) {
-        val idxAsInt = idx.toIntOrNull() ?: 0
-        val drink = Drink(
-            (idxAsInt + 1).toString(),
-            date = System.currentTimeMillis(),
-            volume = 12.0f,
-            abv = 5.0f,
-        )
-        drinkModel.addDrink(drink)
-    }
 
     DesignContent(
         drinksCount = drinks.size,

@@ -13,7 +13,7 @@ class DrinkRepository(private val drinkDao: DrinkDao) {
     }
 
     suspend fun resetDatabase() {
-
+       return drinkDao.deleteAllDrinks()
     }
 
     val drinks: Flow<List<Drink>> = drinkDao.observeDrink()
