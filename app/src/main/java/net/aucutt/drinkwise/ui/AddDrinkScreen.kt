@@ -1,17 +1,22 @@
 package net.aucutt.drinkwise.ui
 
+import android.R.attr.clickable
+import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -23,7 +28,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -33,6 +40,7 @@ import net.aucutt.drinkwise.MainActivity.Companion.TAG
 import net.aucutt.drinkwise.R
 import net.aucutt.drinkwise.data.Drink
 import net.aucutt.drinkwise.data.DrinkViewModel
+import net.aucutt.drinkwise.math.StandardDrink
 import net.aucutt.drinkwise.ui.theme.DrinkWiseTheme
 
 val drinkTypes = listOf("Wine", "Beer", "Hard Alcohol", "Cider", "Seltzer", "Other")
@@ -68,26 +76,27 @@ fun AddDrinkScreen(
                 )
                 drinkModel.addDrink(drink)
             },
-            onResetDrinks = {
-                drinkModel.resetDrinks()
-            }
+
         )
     }
 }
 
+@SuppressLint("LocalContextGetResourceValueCall")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddDrinkScreenContent(
     modifier: Modifier = Modifier,
-    onAddDrink: () -> Unit = {},
-    onResetDrinks: () -> Unit = {}
+    onAddDrink: () -> Unit = {}
 ) {
-    var selectedDrink by remember { mutableStateOf("") }
+    var selectedDrink by remember { mutableStateOf("Other") }
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    var drinkAbv by remember { mutableStateOf("") }
+    var drinkVolume  by remember { mutableStateOf("") }
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        var expanded by rememberSaveable { mutableStateOf(false) }
+
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = it },
@@ -121,26 +130,72 @@ fun AddDrinkScreenContent(
                 }
             }
         }
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp) ) {
+            OutlinedTextField( value = drinkAbv,
+                onValueChange = { drinkAbv = it },
+                label = { Text("ABV (%)") },
+                placeholder = { Text("e.g. 5.0") },
+                modifier = Modifier.weight(1f),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal), //TODO this doesn't seem to work
+                  singleLine = true
+            )
+            OutlinedTextField( value = drinkVolume,
+                onValueChange = { drinkVolume = it },
+                label = { Text("Ounces:") },
+                placeholder = { Text("e.g. 12.0") },
+                modifier = Modifier.weight(1f),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                singleLine = true
+            )
+        }
 
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp) ) {
+            val context = LocalContext.current
                 Button(
-                    onClick = onAddDrink,
+                    onClick = {
+                    val standardDrinks = sanitizeAndCompute( drinkAbv,
+                        drinkVolume)
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.add_drink_compute_toast, selectedDrink, standardDrinks),
+                        Toast.LENGTH_LONG).show()
+                },
                     modifier = Modifier.weight(1f),
                     content = { Text(text = stringResource(R.string.add_drink_compute)) },
+                    enabled = shouldButtonsBeClickable(drinkAbv, drinkVolume)
                 )
                 Button(
                     onClick = onAddDrink,
                     modifier = Modifier.weight(1f),
                     content = { Text(text = "Add a drink") },
+                    enabled =  shouldButtonsBeClickable(drinkAbv, drinkVolume)
                 )
 
         }
-        Button(
-            onClick = onResetDrinks,
-            modifier = Modifier.fillMaxWidth(),
-            content = { Text(text = "Reset drinks") }
-        )
+
     }
+
+
+}
+
+private fun sanitizeAndCompute(abv: String, volume: String) : Float {
+    val abvFloat = abv.toFloatOrNull()
+    val volumeFloat = volume.toFloatOrNull()
+    if( abvFloat == null || volumeFloat == null ) {
+        return 0f
+    } else {
+        return StandardDrink.drinks(abvFloat,volumeFloat)
+    }
+}
+
+private fun shouldButtonsBeClickable(drinkAbv: String, drinkVolume: String) : Boolean {
+    if( drinkAbv.contentEquals("") || drinkVolume.contentEquals("")) {
+        return false
+    }
+    if( drinkAbv.toFloatOrNull() == null || drinkVolume.toFloatOrNull() == null) {
+        return false //TODO separate this out and make it a friendly error
+    }
+    return true
 }
 
 @Preview(showBackground = true)

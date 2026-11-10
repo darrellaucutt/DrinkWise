@@ -63,13 +63,14 @@ fun HomeScreenContent(
             text = "Drink count: $drinksCount"
         )
         Button(
-            onClick = onAddDrink,
-            content = { Text(text = "Add a drink") },
-        )
-        Button(
             onClick = onResetDrinks,
             content = { Text(text = "Reset drinks") }
         )
+        Button(
+            onClick = onAddDrink,
+            content = { Text(text = "Add a drink") },
+        )
+
     }
 }
 
