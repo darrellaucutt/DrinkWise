@@ -16,6 +16,7 @@ import net.aucutt.drinkwise.ui.theme.DrinkWiseTheme
 
 @Composable
 fun HomeScreen(
+    onAddDrink: () -> Unit,
     modifier: Modifier = Modifier,
     drinkModel: DrinkViewModel = viewModel()
 ) {
@@ -25,18 +26,23 @@ fun HomeScreen(
     }
     Log.d(MainActivity.TAG, "Number of drinks ${drinks.size}")
 
+    val fakeOnAddDrink = {
+        val drink = Drink(
+            date = System.currentTimeMillis(),
+            volume = 12f,
+            abv = 4.8f
+        )
+        drinkModel.addDrink(drink)
+    }
+
+    val goToAddDrink = {
+
+    }
+
     HomeScreenContent(
         drinksCount = drinks.size,
         modifier = modifier,
-        onAddDrink = {
-            val drink = Drink(
-                id = (drinks.size + 1).toString(),
-                date = System.currentTimeMillis(),
-                volume = 12f,
-                abv = 4.8f
-            )
-            drinkModel.addDrink(drink)
-        },
+        onAddDrink = onAddDrink,
         onResetDrinks = {
             drinkModel.resetDrinks()
         }

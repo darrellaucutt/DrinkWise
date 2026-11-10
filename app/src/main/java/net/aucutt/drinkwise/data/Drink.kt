@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
     tableName = "drink")
 
 data class Drink(
-    @PrimaryKey val id: String,
+    @PrimaryKey(autoGenerate = true)  val id: Long = 0,
     val date: Long,
     val volume: Float,
     val abv: Float
