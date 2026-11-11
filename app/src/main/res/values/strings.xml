@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">DrinkWise</string>
-    <string name="select_drink">What did you drink?</string>
-    <string name="add_drink_title">Add Drink</string>
+    <string name="select_drink">What are you going to drink?</string>
+    <string name="add_drink_title">Add drink or not</string>
     <string name="add_drink_compute">Compute Drink</string>
     <string name="add_drink_add">Add Drink</string>
     <string name="add_drink_compute_toast">That %1$s is %2$.1f standard drinks!</string>

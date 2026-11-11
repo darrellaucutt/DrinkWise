@@ -1,6 +1,5 @@
 package net.aucutt.drinkwise.ui
 
-import android.R.attr.clickable
 import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.Toast
@@ -35,7 +34,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import net.aucutt.drinkwise.MainActivity
 import net.aucutt.drinkwise.MainActivity.Companion.TAG
 import net.aucutt.drinkwise.R
 import net.aucutt.drinkwise.data.Drink
@@ -71,8 +69,8 @@ fun AddDrinkScreen(
             onAddDrink = {
                 val drink = Drink(
                     date = System.currentTimeMillis(),
-                    volume = 12f,
-                    abv = 4.8f,
+                    type = "test",
+                    drinkWeight = StandardDrink.drinkWeight( 6.0f, 16f)
                 )
                 drinkModel.addDrink(drink)
             },
@@ -136,7 +134,7 @@ fun AddDrinkScreenContent(
                 label = { Text("ABV (%)") },
                 placeholder = { Text("e.g. 5.0") },
                 modifier = Modifier.weight(1f),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal), //TODO this doesn't seem to work
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                   singleLine = true
             )
             OutlinedTextField( value = drinkVolume,
@@ -149,27 +147,34 @@ fun AddDrinkScreenContent(
             )
         }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp) ) {
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             val context = LocalContext.current
-                Button(
-                    onClick = {
-                    val standardDrinks = sanitizeAndCompute( drinkAbv,
-                        drinkVolume)
+            Button(
+                onClick = {
+                    val standardDrinks = sanitizeAndCompute(
+                        drinkAbv,
+                        drinkVolume
+                    )
                     Toast.makeText(
                         context,
-                        context.getString(R.string.add_drink_compute_toast, selectedDrink, standardDrinks),
-                        Toast.LENGTH_LONG).show()
+                        context.getString(
+                            R.string.add_drink_compute_toast,
+                            selectedDrink,
+                            standardDrinks
+                        ),
+                        Toast.LENGTH_LONG
+                    ).show()
                 },
-                    modifier = Modifier.weight(1f),
-                    content = { Text(text = stringResource(R.string.add_drink_compute)) },
-                    enabled = shouldButtonsBeClickable(drinkAbv, drinkVolume)
-                )
-                Button(
-                    onClick = onAddDrink,
-                    modifier = Modifier.weight(1f),
-                    content = { Text(text = "Add a drink") },
-                    enabled =  shouldButtonsBeClickable(drinkAbv, drinkVolume)
-                )
+                modifier = Modifier.weight(1f),
+                content = { Text(text = stringResource(R.string.add_drink_compute)) },
+                enabled = shouldButtonsBeClickable(drinkAbv, drinkVolume)
+            )
+            Button(
+                onClick = onAddDrink,
+                modifier = Modifier.weight(1f),
+                content = { Text(text = stringResource(R.string.add_drink_add)) },
+                enabled = shouldButtonsBeClickable(drinkAbv, drinkVolume)
+            )
 
         }
 
@@ -184,7 +189,7 @@ private fun sanitizeAndCompute(abv: String, volume: String) : Float {
     if( abvFloat == null || volumeFloat == null ) {
         return 0f
     } else {
-        return StandardDrink.drinks(abvFloat,volumeFloat)
+        return StandardDrink.drinkWeight(abvFloat,volumeFloat)
     }
 }
 

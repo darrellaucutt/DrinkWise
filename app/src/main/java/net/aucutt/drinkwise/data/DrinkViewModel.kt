@@ -15,11 +15,11 @@ class DrinkViewModel(application: Application) : AndroidViewModel(application) {
     private val drinkWiseApplication = application as DrinkWiseApplication
     private val drinkRepository : DrinkRepository = drinkWiseApplication.drinkRepository
     val drinks: StateFlow<List<Drink>> = drinkRepository.drinks
-        ?.stateIn(
+        .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
-        ) ?: MutableStateFlow(emptyList())
+        )
 
     fun addDrink(drink: Drink) {
         viewModelScope.launch {

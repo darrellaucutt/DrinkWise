@@ -27,19 +27,6 @@ fun HomeScreen(
     }
     Log.d(MainActivity.TAG, "Number of drinks ${drinks.size}")
 
-    val fakeOnAddDrink = {
-        val drink = Drink(
-            date = System.currentTimeMillis(),
-            volume = 12f,
-            abv = 4.8f
-        )
-        drinkModel.addDrink(drink)
-    }
-
-    val goToAddDrink = {
-
-    }
-
     HomeScreenContent(
         drinksCount = drinks.size,
         modifier = modifier,
