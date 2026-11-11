@@ -31,6 +31,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -44,8 +46,6 @@ import net.aucutt.drinkwise.data.Drink
 import net.aucutt.drinkwise.data.DrinkViewModel
 import net.aucutt.drinkwise.math.StandardDrink
 import net.aucutt.drinkwise.ui.theme.DrinkWiseTheme
-
-val drinkTypes = listOf("Wine", "Beer", "Hard Alcohol", "Cider", "Seltzer", "Other")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,6 +94,8 @@ fun AddDrinkScreenContent(
     var expanded by rememberSaveable { mutableStateOf(false) }
     var drinkAbv by remember { mutableStateOf("") }
     var drinkVolume  by remember { mutableStateOf("") }
+
+    val focusRequester = remember { FocusRequester() }
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -119,15 +121,18 @@ fun AddDrinkScreenContent(
                     expanded = true,
                     onDismissRequest = { expanded = false }
                 ) {
-                    drinkTypes.forEach { option ->
-                        DropdownMenuItem(
-                            text = { Text(option) },
-                            onClick = {
-                                selectedDrink = option
-                                expanded = false
-                                Log.d(TAG, "Drink type $option")
-                            }
-                        )
+                  listOf(StandardDrink.DrinkType.entries).forEach { drinkType ->
+                       drinkType.forEach { drink ->
+                           drink.displayText
+                           DropdownMenuItem(
+                               text = { Text(drink.displayText) },
+                               onClick = {
+                                   selectedDrink = drink.displayText
+                                   expanded = false
+                                   Log.d(TAG, "Drink type $drink.displayText")
+                               }
+                           )
+                       }
                     }
                 }
             }
@@ -137,7 +142,9 @@ fun AddDrinkScreenContent(
                 onValueChange = { drinkAbv = it },
                 label = { Text("ABV (%)") },
                 placeholder = { Text("e.g. 5.0") },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .focusRequester(focusRequester),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                   singleLine = true
             )
@@ -159,6 +166,9 @@ fun AddDrinkScreenContent(
                         drinkAbv,
                         drinkVolume
                     )
+                    if (selectedDrink.contentEquals(StandardDrink.DrinkType.OTHER.displayText)) {
+                        selectedDrink = inferDrinkType(drinkAbv, drinkVolume).displayText
+                    }
                     Toast.makeText(
                         context,
                         context.getString(
@@ -204,8 +214,6 @@ fun AddDrinkScreenContent(
         }
 
     }
-
-
 }
 
 private fun sanitizeAndCompute(abv: String, volume: String) : Float {
@@ -216,6 +224,14 @@ private fun sanitizeAndCompute(abv: String, volume: String) : Float {
     } else {
         return StandardDrink.drinkWeight(abvFloat,volumeFloat)
     }
+}
+private fun inferDrinkType( abv: String, volume: String ) : StandardDrink.DrinkType {
+    val abvFloat = abv.toFloatOrNull()
+    val volumeFloat = volume.toFloatOrNull()
+    if( abvFloat != null && volumeFloat != null ) {
+        return StandardDrink.drinkInferer(abvFloat, volumeFloat)
+    }
+    return StandardDrink.DrinkType.OTHER
 }
 
 private fun shouldButtonsBeClickable(drinkAbv: String, drinkVolume: String) : Boolean {
