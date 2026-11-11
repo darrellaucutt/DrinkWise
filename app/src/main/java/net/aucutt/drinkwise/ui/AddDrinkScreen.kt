@@ -10,11 +10,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -46,6 +50,7 @@ val drinkTypes = listOf("Wine", "Beer", "Hard Alcohol", "Cider", "Seltzer", "Oth
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddDrinkScreen(
+    onBack : () -> Unit,
     modifier: Modifier = Modifier,
     drinkModel: DrinkViewModel = viewModel()
 ) {
@@ -58,7 +63,15 @@ fun AddDrinkScreen(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.add_drink_title)) }
+                title = { Text(stringResource(R.string.add_drink_title)) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back)
+                        )
+                    }
+                }
             )
         }
     ) { innerPadding ->
@@ -66,15 +79,6 @@ fun AddDrinkScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(start = 16.dp, end = 16.dp, top = 16.dp),
-            onAddDrink = {
-                val drink = Drink(
-                    date = System.currentTimeMillis(),
-                    type = "test",
-                    drinkWeight = StandardDrink.drinkWeight( 6.0f, 16f)
-                )
-                drinkModel.addDrink(drink)
-            },
-
         )
     }
 }
@@ -84,7 +88,7 @@ fun AddDrinkScreen(
 @Composable
 fun AddDrinkScreenContent(
     modifier: Modifier = Modifier,
-    onAddDrink: () -> Unit = {}
+    drinkModel: DrinkViewModel = viewModel()
 ) {
     var selectedDrink by remember { mutableStateOf("Other") }
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -170,7 +174,28 @@ fun AddDrinkScreenContent(
                 enabled = shouldButtonsBeClickable(drinkAbv, drinkVolume)
             )
             Button(
-                onClick = onAddDrink,
+                onClick = {
+                    val drinkWeight = sanitizeAndCompute(
+                        drinkAbv,
+                        drinkVolume
+                    )
+                    val newDrink = Drink( date=System.currentTimeMillis(),
+                        type = selectedDrink,
+                        drinkWeight = drinkWeight
+                        )
+                    drinkModel.addDrink(newDrink)
+                    drinkAbv = ""
+                    drinkVolume = ""
+                    Toast.makeText(
+                        context,
+                        context.getString(
+                            R.string.add_drink_save_toast,
+                            selectedDrink,
+                            drinkWeight
+                        ),
+                        Toast.LENGTH_LONG
+                    ).show()
+                },
                 modifier = Modifier.weight(1f),
                 content = { Text(text = stringResource(R.string.add_drink_add)) },
                 enabled = shouldButtonsBeClickable(drinkAbv, drinkVolume)

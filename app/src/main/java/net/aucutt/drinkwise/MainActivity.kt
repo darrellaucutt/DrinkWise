@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
             }
             composable<AddDrinkRoute> {
                 AddDrinkScreen(
-                    drinkModel = drinkViewModel
+                    onBack =  { navController.popBackStack() }
                 )
             }
         }
