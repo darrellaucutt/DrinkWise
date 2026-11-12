@@ -54,11 +54,7 @@ fun AddDrinkScreen(
     modifier: Modifier = Modifier,
     drinkModel: DrinkViewModel = viewModel()
 ) {
-    val drinks by drinkModel.drinks.collectAsStateWithLifecycle()
-    for (drink in drinks) {
-        Log.d(TAG, "Drink ${drink.date}")
-    }
-    Log.d(TAG, "Number of drinks ${drinks.size}")
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
