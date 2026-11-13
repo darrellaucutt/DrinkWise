@@ -41,6 +41,7 @@ class DrinkViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+
     fun generateTestData() {
         val currentTime =  System.currentTimeMillis()
         val oldestTime = currentTime - (14.days.inWholeMilliseconds)

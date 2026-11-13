@@ -58,7 +58,7 @@ fun ListDrinksScreen(
     drinkModel: DrinkViewModel = viewModel()
 ) {
 
-    //TODO filtering should be in viewmodel
+
     val drinks by drinkModel.drinks.collectAsStateWithLifecycle()
     for (drink in drinks) {
         Log.d(TAG, "Drink ${drink.date}")
@@ -72,15 +72,7 @@ fun ListDrinksScreen(
             //need to drop old date.
             drinkModel.trimDataByDate(cutOffDate)
         }
-        for (drink in drinks) {
-            Log.d(TAG, "Drink $drink")
-        }
-        Log.d(TAG, "Number of drinks ${drinks.size}")
-        val filteredDrinks = drinks.filter { it.date > cutOffDate }.sortedBy { it.date }
-        for (filteredDrink in filteredDrinks) {
-            Log.d(TAG, "Filtered Drinks $filteredDrink")
-        }
-        Log.d(TAG, "Number of Filtered drinks ${filteredDrinks.size}")
+
     }
 
     Scaffold(
