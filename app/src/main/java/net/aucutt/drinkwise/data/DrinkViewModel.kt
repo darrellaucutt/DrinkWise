@@ -41,6 +41,12 @@ class DrinkViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun deleteById(id: Long) {
+        viewModelScope.launch {
+            drinkRepository.deleteById(id)
+        }
+    }
+
 
     fun generateTestData() {
         val currentTime =  System.currentTimeMillis()

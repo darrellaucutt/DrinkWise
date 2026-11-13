@@ -24,4 +24,8 @@ interface DrinkDao {
 
     @Query(value = "DELETE FROM drink where date < :deleteFrom")
     suspend fun trimDrinksByDate(deleteFrom : Long)
+
+    @Query(value = "DELETE FROM drink where id = :id")
+    suspend fun deleteById(id : Long)
+
 }

@@ -8,4 +8,5 @@
     <string name="add_drink_save_toast">Added %1$s at %2$.1f standard drinks!</string>
     <string name="back">Back</string>
     <string name="list_drinks_title">View or delete past drinks</string>
+    <string name="list_drinks_disclaimer">Looking for more data? Sorry we only hold drink data for the week!</string>
 </resources>

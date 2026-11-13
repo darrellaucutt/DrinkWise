@@ -20,11 +20,23 @@ data class Drink(
 ) {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun toString(): String {
-        return "Date: ${ formatTimestamp(date)} Type: $type  weight: $drinkWeight"
+        return "Date:  ${ getDay()} ${ getTimeOfDay()} Type: $type  weight: $drinkWeight"
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getFormattedRow() : String {
+        return "${getTimeOfDay()} you drank $type which was ${String.format(Locale.US, "%.2f", drinkWeight)} standard drinks."
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getDay() : String {
+        val formatter = DateTimeFormatter.ofPattern("MMM d", Locale.US)
+        return Instant.ofEpochMilli(date).atZone(ZoneId.systemDefault()).format(formatter).lowercase().replaceFirstChar { it.uppercaseChar() }
     }
     @RequiresApi(Build.VERSION_CODES.O)
-    fun formatTimestamp(timestampMs: Long): String {
-        val formatter = DateTimeFormatter.ofPattern("MMM d, yyyy hh:mma", Locale.US)
-        return Instant.ofEpochMilli(timestampMs).atZone(ZoneId.systemDefault()).format(formatter) .lowercase()
+    private fun getTimeOfDay(): String {
+        val formatter = DateTimeFormatter.ofPattern("h:mma", Locale.US)
+        return Instant.ofEpochMilli(date).atZone(ZoneId.systemDefault()).format(formatter)
     }
+
 }

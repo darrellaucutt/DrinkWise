@@ -19,5 +19,9 @@ class DrinkRepository(private val drinkDao: DrinkDao) {
     suspend fun trimDrinksByDate(deleteFrom : Long) {
        return drinkDao.trimDrinksByDate(deleteFrom)
     }
+
+    suspend fun deleteById(id : Long) {
+        drinkDao.deleteById( id)
+    }
     val drinks: Flow<List<Drink>> = drinkDao.observeDrink()
 }
