@@ -24,6 +24,7 @@ import net.aucutt.drinkwise.ui.theme.DrinkWiseTheme
 @Composable
 fun HomeScreen(
     onAddDrink: () -> Unit,
+    onListDrinks: () -> Unit,
     modifier: Modifier = Modifier,
     drinkModel: DrinkViewModel = viewModel()
 ) {
@@ -41,9 +42,7 @@ fun HomeScreen(
             modifier = Modifier
                 .padding(padding),
             onAddDrink = onAddDrink,
-            onResetDrinks = {
-                drinkModel.resetDrinks()
-            }
+            onResetDrinks = onListDrinks
         )
     }
 }
@@ -54,7 +53,8 @@ fun HomeScreenContent(
     drinksCount: Int,
     modifier: Modifier = Modifier,
     onAddDrink: () -> Unit = {},
-    onResetDrinks: () -> Unit = {}
+    onResetDrinks: () -> Unit = {},
+    drinkModel: DrinkViewModel = viewModel()
 ) {
     Column(modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -63,11 +63,15 @@ fun HomeScreenContent(
         )
         Button(
             onClick = onResetDrinks,
-            content = { Text(text = "Reset drinks") }
+            content = { Text(text = "List Drinks") }
         )
         Button(
             onClick = onAddDrink,
             content = { Text(text = "Add a drink") },
+        )
+        Button(
+            onClick = {drinkModel.generateTestData()},
+            content = { Text(text = "Generate test data") },
         )
 
     }

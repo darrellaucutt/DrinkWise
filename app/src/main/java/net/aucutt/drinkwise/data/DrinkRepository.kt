@@ -16,5 +16,8 @@ class DrinkRepository(private val drinkDao: DrinkDao) {
        return drinkDao.deleteAllDrinks()
     }
 
+    suspend fun trimDrinksByDate(deleteFrom : Long) {
+       return drinkDao.trimDrinksByDate(deleteFrom)
+    }
     val drinks: Flow<List<Drink>> = drinkDao.observeDrink()
 }
