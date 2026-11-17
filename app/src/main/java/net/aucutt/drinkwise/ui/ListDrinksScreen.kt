@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -45,7 +46,7 @@ import kotlin.time.Duration.Companion.days
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListDrinksScreen(
-    onBack : () -> Unit,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier,
     drinkModel: DrinkViewModel = viewModel()
 ) {
@@ -56,7 +57,7 @@ fun ListDrinksScreen(
         Log.d(TAG, "Drink ${drink.date}")
     }
     Log.d(TAG, "Number of drinks ${drinks.size}")
-    if(drinks.isNotEmpty()) {
+    if (drinks.isNotEmpty()) {
         //purge data older than a week.
         val lastDrink = drinks[drinks.size - 1]
         val cutOffDate = System.currentTimeMillis() - 7.days.inWholeMilliseconds
@@ -129,22 +130,22 @@ fun ListDrinksScreenContent(
                         }
                     }
                 }
-                item {
+                item(key = drink.id) {
 
                     val dismissState = rememberSwipeToDismissBoxState(
                         SwipeToDismissBoxValue.Settled,
-                        confirmValueChange  ={ dismissValue -> if (dismissValue == SwipeToDismissBoxValue.EndToStart) {
-                            Log.d(TAG, "Delete the thing ${drink.getFormattedRow()}")
-                            drinkModel.deleteById( drink.id)
-                            true
-                        }
-                        else {
-                            Log.d(TAG, "Don't Delete the thing ${drink.getFormattedRow()}")
-                            false
-                        }
+                        confirmValueChange = { dismissValue ->
+                            if (dismissValue == SwipeToDismissBoxValue.EndToStart) {
+                                Log.d(TAG, "Delete the thing ${drink.getFormattedRow()}")
+                                drinkModel.deleteById(drink.id)
+                                true
+                            } else {
+                                false
+                            }
                         }
                     )
-                        SwipeToDismissBox( state = dismissState, backgroundContent = {
+                    SwipeToDismissBox(
+                        state = dismissState, backgroundContent = {
                             val color = when (dismissState.dismissDirection) {
                                 SwipeToDismissBoxValue.EndToStart -> Color.Red
                                 else -> Color.Transparent
@@ -163,23 +164,36 @@ fun ListDrinksScreenContent(
                                 )
                             }
                         },
-                            content =
-                                { Row(modifier = Modifier.padding(start = 16.dp)) {
-                                    Text(drink.getFormattedRow()) }
+                        content =
+                            {
+                                Row(modifier = Modifier.padding(start = 16.dp)) {
+                                    Text(drink.getFormattedRow())
                                 }
-                        )
+                            }
+                    )
 
                 }
             }
             item {
                 Row {
-                   Text( text = stringResource(R.string.list_drinks_disclaimer),
-                       fontStyle = FontStyle.Italic)
+                    Text(
+                        text = stringResource(R.string.list_drinks_disclaimer),
+                        fontStyle = FontStyle.Italic
+                    )
                 }
             }
         }
+    } else {
+        Column(modifier = modifier,
+            verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Row {
+                Text(
+                    text = stringResource(R.string.list_drinks_empty),
+                    fontStyle = FontStyle.Italic
+                )
+            }
+        }
     }
-
 }
 
 

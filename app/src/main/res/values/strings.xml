@@ -9,4 +9,5 @@
     <string name="back">Back</string>
     <string name="list_drinks_title">View or delete past drinks</string>
     <string name="list_drinks_disclaimer">Looking for more data? Sorry we only hold drink data for the week!</string>
+    <string name="list_drinks_empty">Either there is no data or the data was older than a week and it got purged. Drinkwise only saves data for a week.</string>
 </resources>

@@ -56,7 +56,7 @@ class DrinkViewModel(application: Application) : AndroidViewModel(application) {
         for(idx in 1..( rando.nextInt(1, 20))) {
             val drink = Drink(
                 date = rando.nextLong(oldestTime,currentTime),
-                type = StandardDrink.DrinkType.entries[rando.nextInt(0, StandardDrink.DrinkType.entries.size)].name,
+                type = StandardDrink.DrinkType.entries[rando.nextInt(0, StandardDrink.DrinkType.entries.size)].displayText,
                 drinkWeight = rando.nextFloat() + rando.nextFloat()
             )
             drinkRepository.addDrink(drink)

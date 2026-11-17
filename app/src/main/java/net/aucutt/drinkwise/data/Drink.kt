@@ -25,6 +25,7 @@ data class Drink(
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun getFormattedRow() : String {
+        //TODO seemed cleaner to have this here, but it should go into the UI for localization.
         return "${getTimeOfDay()} you drank $type which was ${String.format(Locale.US, "%.2f", drinkWeight)} standard drinks."
     }
 
