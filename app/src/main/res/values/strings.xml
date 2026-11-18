@@ -6,6 +6,9 @@
     <string name="add_drink_add">Add Drink</string>
     <string name="add_drink_compute_toast">That %1$s is %2$.1f standard drinks!</string>
     <string name="add_drink_save_toast">Added %1$s at %2$.1f standard drinks!</string>
+    <string name="home_screen_week_totals">%1$.1f standard drinks consumed this past week.</string>
+    <string name="home_screen_data">According to the National Institute of Alcohol Abuse and Alcoholism, heavy drinking for men is 5 or more standard drinks a day or 15  or more standard drinks a week. For women, heavy drinking is 4 or more standard drinks in a day or 8 or more in a week. But what is a <b>standard drink?</b> </string>
+    <string name="home_screen_data1">A <b>standard drink</b> is 1.5 ounces of 80 proof alcohol or 12 ounces of beer at 5% alcohol by volume or 12 ounces of wine at 5% alcohol by volume. In the real world, drinks aren\'t so easy to measure. So the app will compute your drink for standard drinks and log the results of that so you can keep track. </string>
     <string name="back">Back</string>
     <string name="list_drinks_title">View or delete past drinks</string>
     <string name="list_drinks_disclaimer">Looking for more data? Sorry we only hold drink data for the week!</string>

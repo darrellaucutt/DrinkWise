@@ -1,9 +1,12 @@
 package net.aucutt.drinkwise.ui
 
+import android.text.Layout.Alignment
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
@@ -12,19 +15,26 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import net.aucutt.drinkwise.MainActivity
+import net.aucutt.drinkwise.R
 import net.aucutt.drinkwise.data.Drink
 import net.aucutt.drinkwise.data.DrinkViewModel
+import net.aucutt.drinkwise.math.StandardDrink
 import net.aucutt.drinkwise.ui.theme.DrinkWiseTheme
+import kotlin.time.Duration.Companion.days
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 
 @Composable
 fun HomeScreen(
     onAddDrink: () -> Unit,
     onListDrinks: () -> Unit,
+    onGenerateTestData: () -> Unit,
     modifier: Modifier = Modifier,
     drinkModel: DrinkViewModel = viewModel()
 ) {
@@ -38,11 +48,13 @@ fun HomeScreen(
         modifier = modifier.fillMaxSize(),
     ) { padding ->
         HomeScreenContent(
-            drinksCount = drinks.size,
+            drinks = drinks,
             modifier = Modifier
-                .padding(padding),
+                .padding(padding)
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp),
             onAddDrink = onAddDrink,
-            onResetDrinks = onListDrinks
+            onResetDrinks = onListDrinks,
+            onGenerateTestData = onGenerateTestData
         )
     }
 }
@@ -50,27 +62,40 @@ fun HomeScreen(
 // Stateless composable separated for preview and state hoisting
 @Composable
 fun HomeScreenContent(
-    drinksCount: Int,
+    drinks: List<Drink>,
     modifier: Modifier = Modifier,
     onAddDrink: () -> Unit = {},
     onResetDrinks: () -> Unit = {},
-    drinkModel: DrinkViewModel = viewModel()
+    onGenerateTestData: () -> Unit = {}
 ) {
+    val standardDrinks = StandardDrink.computeTotalForWeek(drinks)
     Column(modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(
-            text = "Drink count: $drinksCount"
+            text = stringResource(R.string.home_screen_week_totals, standardDrinks)
+
+        )
+        Row(modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)){
+            Button(
+                onClick = onResetDrinks,
+                modifier = Modifier.weight(1f),
+                content = { Text(text = "List Drinks") }
+            )
+            Button(
+                onClick = onAddDrink,
+                modifier = Modifier.weight(1f),
+                content = { Text(text = "Add a drink") },
+            )
+        }
+        Text(text = stringResource(R.string.home_screen_data),
+            fontStyle = FontStyle.Italic
+        )
+        Text(text = stringResource(R.string.home_screen_data1),
+           fontStyle = FontStyle.Italic
         )
         Button(
-            onClick = onResetDrinks,
-            content = { Text(text = "List Drinks") }
-        )
-        Button(
-            onClick = onAddDrink,
-            content = { Text(text = "Add a drink") },
-        )
-        Button(
-            onClick = {drinkModel.generateTestData()},
+            onClick = onGenerateTestData,
             content = { Text(text = "Generate test data") },
         )
 
@@ -82,8 +107,21 @@ fun HomeScreenContent(
 fun HomeScreenPreview() {
     DrinkWiseTheme {
         // Use stateless composable in Preview to avoid ViewModel instantiation issues
+
+        val drinks = listOf<Drink>(
+            Drink(
+                date = System.currentTimeMillis(),
+                type = StandardDrink.DrinkType.WINE.displayText,
+                drinkWeight = 1.1f
+            ),
+            Drink(
+                date = System.currentTimeMillis() - 1.days.inWholeMilliseconds,
+                type = StandardDrink.DrinkType.BEER.displayText,
+                drinkWeight = 1.6f
+            )
+        )
         HomeScreenContent(
-            drinksCount = 0
+            drinks
         )
     }
 }
